@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+        body{background:#f9f5ff;padding-bottom:70px}
+        .box{background:white;border-radius:24px;padding:25px;margin:20px auto;max-width:400px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.1)}
+        input{width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:12px;font-size:16px;margin:8px 0}
+        button{background:#7c5fff;color:white;border:none;padding:12px 16px;border-radius:12px;margin:6px}
+        button:disabled{background:#ccc}
+        .pet{font-size:70px;margin:20px 0;animation:bounce 1.5s infinite alternate}
+        @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+        .info{font-size:17px;margin:6px 0}
+        .desc{color:#666;margin:10px 0}
+        .pet-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:15px}
+        .pet-item{font-size:32px;padding:8px;background:#f3eeff;border-radius:12px;cursor:pointer}
+        .tip{color:red;font-size:14px;margin-top:10px}
+        .tabbar{position:fixed;bottom:0;left:0;width:100%;height:60px;background:white;display:flex;border-top:1px solid #eee}
+        .tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer}
+        .page{display:none;padding:10px}
+        .public{background:#f8f8f8;padding:10px;border-radius:12px;margin:8px auto;max-width:350px}
+        .pet-switch{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+        .pet-small{font-size:36px;padding:6px;background:#f3eeff;border-radius:10px;cursor:pointer}
+    </style>
+</head>
+<body>
+
+<div class="page" id="page1" style="display:block">
+    <div class="box" id="nameBox">
+        <input id="username" placeholder="输入名字（永久不可改）">
+        <button onclick="setName()">确认</button>
+    </div>
+
+    <div class="box" id="petMain" style="display:none">
+        <div class="pet-switch" id="petSwitch"></div>
+        <div class="pet" id="icon"></div>
+        <div class="info" id="name"></div>
+        <div class="info" id="age"></div>
+        <div class="info" id="love"></div>
+        <div class="info" id="hunger"></div>
+        <div class="info" id="mood"></div>
+        <div class="desc" id="desc"></div>
+        <button onclick="doAct(1)">🍼喂养</button>
+        <button onclick="doAct(2)">🧸玩耍</button>
+        <button onclick="doAct(3)">🛁洗澡</button>
+        <button onclick="doAct(4)">💤睡觉</button>
+        <div class="tip" id="tip"></div>
+    </div>
+</div>
+
+<div class="page" id="page2">
+    <div class="box">
+        <div class="tip" id="adoptTip"></div>
+        <div class="pet-grid" id="adoptList"></div>
+    </div>
+</div>
+
+<div class="page" id="page3">
+    <div class="box"><div class="pet-grid" id="allPet"></div></div>
+</div>
+
+<div class="page" id="page4">
+    <div class="box"><div id="publicList"></div></div>
+</div>
+
+<div class="tabbar">
+    <div class="tab" onclick="tab(1)">我的</div>
+    <div class="tab" onclick="tab(2)">领养</div>
+    <div class="tab" onclick="tab(3)">宠物栏</div>
+    <div class="tab" onclick="tab(4)">大家</div>
+</div>
+
+<script>
+const DAY = 86400000;
+const HOUR = 3600000;
+const MONTH = 30*DAY;
+
+const pets = [
+    {icon:"🐣",stage:["🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
+    {icon:"🐱",stage:["🐱","🐈"],name:"小猫",desc:"温柔粘人"},
+    {icon:"🐍",stage:["🐍"],name:"小蛇",desc:"优雅安静"},
+    {icon:"🐶",stage:["🐶","🐕","🦮"],name:"小狗",desc:"忠诚活泼"},
+    {icon:"🐿️",stage:["🐿️"],name:"松鼠",desc:"元气满满"},
+    {icon:"🐰",stage:["🐰","🐇"],name:"兔子",desc:"软萌乖巧"},
+    {icon:"🐦",stage:["🐦"],name:"小鸟",desc:"轻盈可爱"},
+    {icon:"🦜",stage:["🦜"],name:"鹦鹉",desc:"聪明鲜艳"},
+    {icon:"🦚",stage:["🦚"],name:"孔雀",desc:"美丽优雅"},
+    {icon:"🐭",stage:["🐭","🐀"],name:"小鼠",desc:"机灵小巧"},
+];
+
+function getData(){
+    let d=localStorage.getItem("pet_data");
+    return d?JSON.parse(d):null;
+}
+function saveData(d){
+    localStorage.setItem("pet_data",JSON.stringify(d));
+}
+
+function tab(n){
+    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+    document.getElementById("page"+n).style.display="block";
+}
+
+let current = 0;
+
+function setName(){
+    let user=document.getElementById("username").value.trim();
+    if(!user)return;
+    let d={
+        user:user,
+        pets:[],
+        cd:0
+    };
+    saveData(d);
+    show();
+}
+
+function checkAllDie(){
+    let d=getData();
+    if(!d)return;
+    d.pets.forEach((pet,i)=>{
+        if(pet.dead)return;
+        let now=Date.now();
+        if(now-pet.lastFeed >= 3*DAY && pet.mood<40){
+            if(Math.random()<0.3){
+                d.pets[i].dead=true;
+            }
+        }
+    });
+    saveData(d);
+}
+
+function show(){
+    let d=getData();
+    if(!d){
+        document.getElementById("nameBox").style.display="block";
+        document.getElementById("petMain").style.display="none";
+        return;
+    }
+    checkAllDie();
+    document.getElementById("nameBox").style.display="none";
+    document.getElementById("petMain").style.display="block";
+    renderSwitch();
+    showPet();
+    showPublic();
+}
+
+function renderSwitch(){
+    let d=getData();
+    let box=document.getElementById("petSwitch");
+    box.innerHTML="";
+    d.pets.forEach((pet,i)=>{
+        let p=pets[pet.pid];
+        let div=document.createElement("div");
+        div.className="pet-small";
+        div.innerText=p.stage[pet.stage];
+        div.onclick=()=>{current=i;showPet()};
+        box.appendChild(div);
+    });
+}
+
+function showPet(){
+    let d=getData();
+    if(!d.pets.length){
+        tab(2);
+        return;
+    }
+    let pet=d.pets[current];
+    let p=pets[pet.pid];
+    document.getElementById("icon").innerText=p.stage[pet.stage];
+    document.getElementById("name").innerText=d.user+"的"+p.name;
+    document.getElementById("age").innerText="年龄："+pet.age;
+    document.getElementById("love").innerText="爱心："+pet.love;
+    document.getElementById("hunger").innerText="饥饿："+pet.hunger;
+    document.getElementById("mood").innerText="心情："+pet.mood;
+    document.getElementById("desc").innerText=p.desc;
+
+    let now=Date.now();
+    let cd=now<d.cd;
+    document.querySelectorAll("button").forEach(b=>{
+        b.disabled=pet.dead||cd;
+    });
+    document.getElementById("tip").innerText=pet.dead?"⚠️已死亡":cd?"冷却1小时中":"";
+}
+
+function adopt(pid){
+    let d=getData();
+    let now=Date.now();
+    if(d.pets.length>0){
+        let last=d.pets[d.pets.length-1];
+        if(now-last.adoptTime < MONTH){
+            alert("需30天后才能领养下一只");
+            return;
+        }
+    }
+    d.pets.push({
+        pid:pid,
+        age:0,stage:0,love:0,hunger:50,mood:50,
+        adoptTime:now,
+        lastFeed:now,
+        dead:false
+    });
+    saveData(d);
+    current=d.pets.length-1;
+    tab(1);
+    show();
+}
+
+function doAct(t){
+    let d=getData();
+    if(!d.pets.length)return;
+    let pet=d.pets[current];
+    if(pet.dead)return;
+    if(Date.now()<d.cd)return;
+    d.cd=Date.now()+HOUR;
+
+    if(t==1){
+        pet.hunger=Math.min(100,pet.hunger+20);
+        pet.love++;
+        pet.lastFeed=Date.now();
+        if(pet.love%4==0 && pet.stage<pets[pet.pid].stage.length-1){
+            pet.stage++;pet.age++;
+        }
+    }
+    if(t==2){pet.mood=Math.min(100,pet.mood+10);pet.love++}
+    if(t==3){pet.mood=Math.min(100,pet.mood+8)}
+    if(t==4){pet.mood=Math.min(100,pet.mood+12);pet.hunger=Math.max(0,pet.hunger-5)}
+
+    saveData(d);
+    showPet();
+}
+
+function showPublic(){
+    let box=document.getElementById("publicList");
+    box.innerHTML="";
+    let d=getData();
+    if(!d)return;
+    d.pets.forEach(pet=>{
+        if(!pet.dead){
+            let p=pets[pet.pid];
+            let div=document.createElement("div");
+            div.className="public";
+            div.innerText=p.stage[pet.stage]+" "+d.user+"的"+p.name+" 年龄:"+pet.age;
+            box.appendChild(div);
+        }
+    });
+}
+
+pets.forEach((p,i)=>{
+    let div=document.createElement("div");
+    div.className="pet-item";
+    div.innerText=p.icon;
+    div.onclick=()=>adopt(i);
+    document.getElementById("adoptList").appendChild(div);
+
+    let div2=document.createElement("div");
+    div2.className="pet-item";
+    div2.innerText=p.icon;
+    document.getElementById("allPet").appendChild(div2);
+});
+
+show();
+</script>
+</body>
+</html>
