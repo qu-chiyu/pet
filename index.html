@@ -83,7 +83,7 @@
 <body class="theme-c2">
 <div class="setting-wrap">
     <div class="setting-btn" onclick="toggleSetting()">
-        <img src="st.png" class="setting-img" alt="设置">
+        <img src="st1.png" class="setting-img" id="settingImg" alt="设置">
     </div>
     <div class="setting-panel" id="settingPanel">
         <div class="theme-item" onclick="changeTheme('c1')">春天绿</div>
@@ -272,6 +272,11 @@ function updatePetStage(pet){
         else pet.stage = 0;
     }
 }
+// 设置按钮图片切换
+function setSettingImg(theme){
+    const img = document.getElementById("settingImg");
+    img.src = theme === 'c3' ? 'st2.png' : 'st1.png';
+}
 function show(){
     let d=getData();
     if(!d){
@@ -279,7 +284,10 @@ function show(){
         document.getElementById("petMain").style.display="none";
         return;
     }
-    if(d.theme) changeTheme(d.theme, false);
+    if(d.theme) {
+        changeTheme(d.theme, false);
+        setSettingImg(d.theme); // 初始化设置按钮图片
+    }
     reduceAttr();
     checkAllDie();
     checkLayEgg();
@@ -369,18 +377,24 @@ function doAct(t){
     if(now < pet.petCd)return;
     pet.petCd = now + THIRTY_MINUTES;
     if(pet.thirst == null) pet.thirst = 80;
-    if(t==1){
-        pet.hunger=Math.min(100,pet.hunger+20);
+    // 核心修改：爱心累计到4则年龄+1，爱心-4
+    const addLove = () => {
         pet.love++;
-        pet.lastFeed=Date.now();
-        // 爱心每4个涨1岁，仅小鸡生效年龄进化
-        if(pet.love%4==0){
+        // 爱心达到4时触发年龄增长
+        if(pet.love >= 4){
             pet.age++;
-            updatePetStage(pet);
+            pet.love -= 4; // 爱心减4
+            updatePetStage(pet); // 更新宠物阶段
         }
     }
+    if(t==1){
+        pet.hunger=Math.min(100,pet.hunger+20);
+        addLove(); // 喂养加爱心
+        pet.lastFeed=Date.now();
+    }
     if(t==2){
-        pet.mood=Math.min(100,pet.mood+10);pet.love++
+        pet.mood=Math.min(100,pet.mood+10);
+        addLove(); // 玩耍加爱心
     }
     if(t==3){
         pet.mood=Math.min(100,pet.mood+8)
@@ -389,7 +403,8 @@ function doAct(t){
         pet.mood=Math.min(100,pet.mood+12);pet.hunger=Math.max(0,pet.hunger-5)
     }
     if(t==5){
-        pet.thirst=Math.min(100,pet.thirst+25);pet.love++
+        pet.thirst=Math.min(100,pet.thirst+25);
+        addLove(); // 喝水加爱心
     }
     saveData(d);
     showPet();
@@ -446,6 +461,8 @@ function changeTheme(theme, isSave = true){
     const body = document.body;
     body.classList.remove('theme-c1', 'theme-c2', 'theme-c3');
     body.classList.add(`theme-${theme}`);
+    // 切换设置按钮图片
+    setSettingImg(theme);
     if(isSave){
         let d=getData();
         d.theme = theme;
