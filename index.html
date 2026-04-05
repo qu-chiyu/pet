@@ -93,7 +93,6 @@
         <div class="theme-item" onclick="changeTheme('c3')">幽暗黑(深色)</div>
     </div>
 </div>
-
 <!-- 页面容器（用于滑动） -->
 <div class="page-container" id="pageContainer">
     <div class="page" id="page1" style="display:block">
@@ -132,22 +131,20 @@
         </div>
     </div>
 </div>
-
 <!-- 底部标签栏 -->
 <div class="tabbar">
     <div class="tab" onclick="tab(1)">我的</div>
     <div class="tab" onclick="tab(2)">领养</div>
     <div class="tab" onclick="tab(3)">宠物</div>
 </div>
-
 <script>
 const DAY = 86400000;
 const HOUR = 3600000;
-const THIRTY_MINUTES = 1800000; // 操作冷却30分钟
+const THIRTY_MINUTES = 1800000; // 单宠物操作冷却30分钟
 const MONTH = 30*DAY; // 领养间隔30天（第3只开始）
 const TEN_MINUTES = 600000;
 const REDUCE_NUM = 3;
-const MAX_FREE_ADOPT = 2; // 核心：免费直接领养最大数量2只
+const MAX_FREE_ADOPT = 2; // 免费直接领养最大数量2只
 const pets = [
     {icon:"🐣",stage:["🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
     {icon:"🐱",stage:["🐱","🐈"],name:"小猫",desc:"温柔粘人"},
@@ -160,7 +157,6 @@ const pets = [
     {icon:"🦚",stage:["🦚"],name:"孔雀",desc:"美丽优雅"},
     {icon:"🐭",stage:["🐭","🐀"],name:"小鼠",desc:"机灵小巧"},
 ];
-
 // 本地存储操作
 function getData(){
     let d=localStorage.getItem("pet_data");
@@ -169,7 +165,6 @@ function getData(){
 function saveData(d){
     localStorage.setItem("pet_data",JSON.stringify(d));
 }
-
 // 标签页切换
 let currentPage = 1;
 function tab(n){
@@ -179,7 +174,6 @@ function tab(n){
     // 切换到宠物栏时重新渲染
     if(n===3) renderPetList();
 }
-
 // 左右滑动切换页面核心逻辑
 let startX = 0;
 const container = document.getElementById("pageContainer");
@@ -200,7 +194,6 @@ container.addEventListener('touchend', (e)=>{
         }
     }
 });
-
 let currentPet = 0;
 // 设置用户名
 function setName(){
@@ -209,14 +202,12 @@ function setName(){
     let d={
         user:user,
         pets:[],
-        cd:0,
         lastReduce: Date.now(),
         theme: 'c2'
     };
     saveData(d);
     show();
 }
-
 // 检查宠物死亡
 function checkAllDie(){
     let d=getData();
@@ -232,7 +223,6 @@ function checkAllDie(){
     });
     saveData(d);
 }
-
 // 10分钟属性减少（饥饿、心情、口渴）- 修复口渴值null
 function reduceAttr(){
     let d=getData();
@@ -242,6 +232,7 @@ function reduceAttr(){
         d.pets.forEach(pet=>{
             if(!pet.dead){
                 if(pet.thirst == null || pet.thirst === undefined) pet.thirst = 80;
+                if(pet.petCd == null) pet.petCd = 0; // 老宠物补全petCd属性
                 pet.hunger = Math.max(0, pet.hunger - REDUCE_NUM);
                 pet.mood = Math.max(0, pet.mood - REDUCE_NUM);
                 pet.thirst = Math.max(0, pet.thirst - REDUCE_NUM);
@@ -251,7 +242,6 @@ function reduceAttr(){
         saveData(d);
     }
 }
-
 // 展示宠物信息
 function show(){
     let d=getData();
@@ -268,7 +258,6 @@ function show(){
     renderSwitch();
     showPet();
 }
-
 // 渲染宠物小切换栏
 function renderSwitch(){
     let d=getData();
@@ -285,8 +274,7 @@ function renderSwitch(){
         }
     });
 }
-
-// 展示当前宠物详情
+// 展示当前宠物详情 - 核心修改：判断单宠物petCd
 function showPet(){
     let d=getData();
     if(!d.pets.length){
@@ -295,12 +283,13 @@ function showPet(){
     }
     let pet=d.pets[currentPet];
     let p=pets[pet.pid];
-    // 所有属性兜底，避免null
+    // 所有属性兜底，老宠物补全petCd
     pet.thirst = pet.thirst ?? 80;
     pet.hunger = pet.hunger ?? 50;
     pet.mood = pet.mood ?? 50;
     pet.love = pet.love ?? 0;
     pet.age = pet.age ?? 0;
+    pet.petCd = pet.petCd ?? 0; // 单宠物冷却时间，默认0
 
     document.getElementById("icon").innerText=p.stage[pet.stage];
     document.getElementById("name").innerText=d.user+"的"+p.name;
@@ -310,15 +299,15 @@ function showPet(){
     document.getElementById("thirst").innerText="口渴："+pet.thirst;
     document.getElementById("mood").innerText="心情："+pet.mood;
     document.getElementById("desc").innerText=p.desc;
+    
     let now=Date.now();
-    let cd=now<d.cd;
+    let cd=now < pet.petCd; // 仅判断当前宠物的冷却
     document.querySelectorAll("button").forEach(b=>{
         b.disabled=pet.dead||cd;
     });
     document.getElementById("tip").innerText=pet.dead?"⚠️已死亡":cd?"冷却30分钟中":"";
 }
-
-// 领养宠物 - 核心修改：支持直接领养2只，第3只开始需30天间隔
+// 领养宠物 - 核心修改：初始化单宠物petCd
 function adopt(pid){
     let d=getData();
     let now=Date.now();
@@ -330,13 +319,14 @@ function adopt(pid){
             return;
         }
     }
-    // 初始化宠物属性，口渴默认80
+    // 初始化宠物属性，添加petCd（单宠物冷却），口渴默认80
     d.pets.push({
         pid:pid,
         age:0,stage:0,love:0,hunger:50,mood:50,thirst:80,
         adoptTime:now,
         lastFeed:now,
-        dead:false
+        dead:false,
+        petCd:0 // 单宠物冷却时间，初始0
     });
     saveData(d);
     currentPet=d.pets.length-1;
@@ -345,15 +335,17 @@ function adopt(pid){
     // 领养后更新宠物栏
     if(currentPage===3) renderPetList();
 }
-
-// 宠物操作（喂养/玩耍/洗澡/睡觉/喝水）
+// 宠物操作（喂养/玩耍/洗澡/睡觉/喝水）- 核心修改：设置单宠物petCd
 function doAct(t){
     let d=getData();
     if(!d.pets.length)return;
     let pet=d.pets[currentPet];
     if(pet.dead)return;
-    if(Date.now()<d.cd)return;
-    d.cd=Date.now()+THIRTY_MINUTES;
+    
+    let now=Date.now();
+    if(now < pet.petCd)return; // 仅判断当前宠物的冷却
+    pet.petCd = now + THIRTY_MINUTES; // 给当前宠物设置30分钟冷却
+
     if(pet.thirst == null) pet.thirst = 80;
     if(t==1){//喂养
         pet.hunger=Math.min(100,pet.hunger+20);
@@ -380,7 +372,6 @@ function doAct(t){
     // 操作后更新宠物栏
     if(currentPage===3) renderPetList();
 }
-
 // 渲染宠物栏（分页3）
 function renderPetList(){
     let d=getData();
@@ -398,6 +389,7 @@ function renderPetList(){
         pet.mood = pet.mood ?? 50;
         pet.age = pet.age ?? 0;
         pet.love = pet.love ?? 0;
+        pet.petCd = pet.petCd ?? 0;
 
         let card=document.createElement("div");
         card.className="pet-card";
@@ -411,7 +403,6 @@ function renderPetList(){
         box.appendChild(card);
     });
 }
-
 // 渲染领养列表
 pets.forEach((p,i)=>{
     let div=document.createElement("div");
@@ -420,7 +411,6 @@ pets.forEach((p,i)=>{
     div.onclick=()=>adopt(i);
     document.getElementById("adoptList").appendChild(div);
 });
-
 // 右上角设置面板切换
 function toggleSetting(){
     const panel = document.getElementById("settingPanel");
@@ -433,7 +423,6 @@ function toggleSetting(){
         }
     });
 }
-
 // 切换主题
 function changeTheme(theme, isSave = true){
     const body = document.body;
@@ -445,7 +434,6 @@ function changeTheme(theme, isSave = true){
         saveData(d);
     }
 }
-
 // 初始化展示
 show();
 // 定时检查属性，更新宠物状态
