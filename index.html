@@ -156,7 +156,10 @@ const pets = [
 ];
 function getData(){
     let d=localStorage.getItem("pet_data");
-    return d?JSON.parse(d):{theme: 'c2'};
+    let data = d?JSON.parse(d):{theme: 'c2', lastLayEggCheck: Date.now()};
+    // 初始化生蛋检查时间
+    if(!data.lastLayEggCheck) data.lastLayEggCheck = Date.now();
+    return data;
 }
 function saveData(d){
     localStorage.setItem("pet_data",JSON.stringify(d));
@@ -192,6 +195,7 @@ function setName(){
         user:user,
         pets:[],
         lastReduce: Date.now(),
+        lastLayEggCheck: Date.now(),
         theme: 'c2'
     };
     saveData(d);
@@ -209,6 +213,35 @@ function checkAllDie(){
             }
         }
     });
+    saveData(d);
+}
+// 母鸡生蛋检查：每天20%概率，仅🐓形态且未死亡的小鸡生效
+function checkLayEgg(){
+    let d=getData();
+    if(!d || !d.pets.length) return;
+    const now = Date.now();
+    // 检查是否过了一天
+    if(now - d.lastLayEggCheck < DAY) return;
+    // 遍历所有宠物，找母鸡（🐓，pid=0，stage=4，未死亡）
+    d.pets.forEach(hen => {
+        if(hen.pid === 0 && hen.stage === 4 && !hen.dead){
+            // 20%概率生蛋
+            if(Math.random() < 0.2){
+                // 新增鸡蛋宠物（初始形态🥚）
+                d.pets.push({
+                    pid:0,
+                    age:0,stage:0,love:0,hunger:50,mood:50,thirst:80,
+                    adoptTime:now,
+                    lastFeed:now,
+                    dead:false,
+                    petCd:0
+                });
+                alert("🎉你的母鸡生出了一颗鸡蛋，已加入宠物栏！");
+            }
+        }
+    });
+    // 更新检查时间
+    d.lastLayEggCheck = now;
     saveData(d);
 }
 function reduceAttr(){
@@ -249,6 +282,7 @@ function show(){
     if(d.theme) changeTheme(d.theme, false);
     reduceAttr();
     checkAllDie();
+    checkLayEgg();
     // 刷新所有宠物阶段
     d.pets.forEach(pet=>updatePetStage(pet));
     saveData(d);
@@ -423,6 +457,7 @@ setInterval(()=>{
     let d=getData();
     if(d && d.pets.length){
         reduceAttr();
+        checkLayEgg();
         showPet();
         if(currentPage===3) renderPetList();
     }
