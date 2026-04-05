@@ -4,127 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:system-ui,sans-serif
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+        /* 主题变量定义 - 梦幻粉默认 */
+        :root {
+            --bg-main: #f9f5ff;
+            --bg-box: #fff;
+            --bg-btn: #7c5fff;
+            --bg-btn-dis: #ccc;
+            --bg-pet-small: #f3eeff;
+            --bg-public: #f8f8f8;
+            --bg-tabbar: #fff;
+            --border-tabbar: #eee;
+            --text-main: #000;
+            --text-desc: #666;
+            --text-tip: red;
+            --border-input: #ddd;
         }
-        body{
-            background:#f9f5ff;
-            padding-bottom:70px
+        /* 春天绿(c1) - 浅绿按钮 */
+        .theme-c1 {
+            --bg-main: #f0fdf4;
+            --bg-box: #fff;
+            --bg-btn: #86efac;
+            --bg-btn-dis: #dcfce7;
+            --bg-pet-small: #dcfce7;
+            --bg-public: #f1fdf1;
+            --bg-tabbar: #fff;
+            --border-tabbar: #dcfce7;
+            --text-main: #000;
+            --text-desc: #406640;
+            --text-tip: #ef4444;
+            --border-input: #a7f3d0;
         }
-        .box{
-            background:white;
-            border-radius:24px;
-            padding:25px;
-            margin:20px auto;
-            max-width:400px;
-            text-align:center;
-            box-shadow:0 8px 20px rgba(0,0,0,.1)
+        /* 幽暗黑(c3) - 深色模式 */
+        .theme-c3 {
+            --bg-main: #121212;
+            --bg-box: #1e1e1e;
+            --bg-btn: #6366f1;
+            --bg-btn-dis: #374151;
+            --bg-pet-small: #2d2d2d;
+            --bg-public: #252525;
+            --bg-tabbar: #1e1e1e;
+            --border-tabbar: #374151;
+            --text-main: #f9f9f9;
+            --text-desc: #9ca3af;
+            --text-tip: #f87171;
+            --border-input: #374151;
         }
-        input{
-            width:100%;
-            padding:12px 15px;
-            border:1px solid #ddd;
-            border-radius:12px;
-            font-size:16px;
-            margin:8px 0
-        }
-        button{
-            background:#7c5fff;
-            color:white;
-            border:none;
-            padding:12px 16px;
-            border-radius:12px;
-            margin:6px
-        }
-        button:disabled{
-            background:#ccc
-        }
-        .pet{
-            font-size:70px;
-            margin:20px 0;
-            animation:bounce 1.5s infinite alternate
-        }
-        @keyframes bounce{
-            from{transform:translateY(0)}
-            to{transform:translateY(-10px)}
-        }
-        .info{
-            font-size:17px;
-            margin:6px 0
-        }
-        .desc{
-            color:#666;
-            margin:10px 0
-        }
-        .pet-grid{
-            display:flex;
-            flex-wrap:wrap;
-            gap:10px;
-            justify-content:center;
-            margin-top:15px
-        }
-        .pet-item{
-            font-size:32px;
-            padding:8px;
-            background:#f3eeff;
-            border-radius:12px;
-            cursor:pointer
-        }
-        .tip{
-            color:red;
-            font-size:14px;
-            margin-top:10px
-        }
-        .tabbar{
-            position:fixed;
-            bottom:0;
-            left:0;
-            width:100%;
-            height:60px;
-            background:white;
-            display:flex;
-            border-top:1px solid #eee
-        }
-        .tab{
-            flex:1;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:15px;
-            cursor:pointer
-        }
-        .page{
-            display:none;
-            padding:10px
-        }
-        .public{
-            background:#f8f8f8;
-            padding:10px;
-            border-radius:12px;
-            margin:8px auto;
-            max-width:350px
-        }
-        .pet-switch{
-            display:flex;
-            gap:8px;
-            justify-content:center;
-            flex-wrap:wrap;
-            margin-bottom:10px
-        }
-        .pet-small{
-            font-size:36px;
-            padding:6px;
-            background:#f3eeff;
-            border-radius:10px;
-            cursor:pointer
-        }
+        body{background:var(--bg-main);padding-bottom:70px;color:var(--text-main);position:relative;min-height:100vh;touch-action:pan-y;}
+        .box{background:var(--bg-box);border-radius:24px;padding:25px;margin:20px auto;max-width:400px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.1)}
+        input{width:100%;padding:12px 15px;border:1px solid var(--border-input);border-radius:12px;font-size:16px;margin:8px 0;background:var(--bg-box);color:var(--text-main)}
+        input::placeholder{color:var(--text-desc)}
+        button{background:var(--bg-btn);color:white;border:none;padding:12px 16px;border-radius:12px;margin:6px;cursor:pointer}
+        button:disabled{background:var(--bg-btn-dis);cursor:not-allowed}
+        .pet{font-size:70px;margin:20px 0;animation:bounce 1.5s infinite alternate}
+        @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+        .info{font-size:17px;margin:6px 0}
+        .desc{color:var(--text-desc);margin:10px 0}
+        .pet-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:15px}
+        .pet-item{font-size:32px;padding:8px;background:var(--bg-pet-small);border-radius:12px;cursor:pointer;color:var(--text-main)}
+        .tip{color:var(--text-tip);font-size:14px;margin-top:10px}
+        .tabbar{position:fixed;bottom:0;left:0;width:100%;height:60px;background:var(--bg-tabbar);display:flex;border-top:1px solid var(--border-tabbar);z-index:99}
+        .tab{flex:1;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;color:var(--text-main)}
+        .page{display:none;padding:10px;min-height:calc(100vh - 130px);}
+        .public{background:var(--bg-public);padding:10px;border-radius:12px;margin:8px auto;max-width:350px;color:var(--text-main)}
+        .pet-switch{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+        .pet-small{font-size:36px;padding:6px;background:var(--bg-pet-small);border-radius:10px;cursor:pointer;color:var(--text-main)}
+        /* 右上角设置样式 - 纯黑色齿轮 */
+        .setting-wrap{position:fixed;top:15px;right:15px;z-index:999}
+        .setting-btn{font-size:24px;cursor:pointer;padding:8px 12px;border-radius:8px;background:var(--bg-box);border:1px solid var(--border-input);color:#000 !important;}
+        .setting-panel{position:absolute;top:50px;right:0;background:var(--bg-box);border-radius:12px;padding:10px;border:1px solid var(--border-input);display:none;flex-direction:column;gap:8px;min-width:120px}
+        .theme-item{padding:8px;text-align:center;border-radius:8px;cursor:pointer;border:1px solid var(--border-input)}
+        .theme-item:hover{opacity:0.8}
+        .setting-panel.show{display:flex}
+        /* 宠物栏样式优化 */
+        .pet-list{display:flex;flex-direction:column;gap:15px;margin-top:20px}
+        .pet-card{background:var(--bg-pet-small);padding:15px;border-radius:16px;cursor:pointer;transition:opacity 0.3s}
+        .pet-card:hover{opacity:0.8}
+        .pet-card-icon{font-size:50px;margin-bottom:10px}
     </style>
 </head>
-<body>
-    <!-- 我的宠物页 -->
+<body class="theme-c2">
+<!-- 右上角设置模块 -->
+<div class="setting-wrap">
+    <div class="setting-btn" onclick="toggleSetting()">⚙️</div>
+    <div class="setting-panel" id="settingPanel">
+        <div class="theme-item" onclick="changeTheme('c1')">春天绿</div>
+        <div class="theme-item" onclick="changeTheme('c2')">梦幻粉(默认)</div>
+        <div class="theme-item" onclick="changeTheme('c3')">幽暗黑(深色)</div>
+    </div>
+</div>
+
+<!-- 页面容器（用于滑动） -->
+<div class="page-container" id="pageContainer">
     <div class="page" id="page1" style="display:block">
         <div class="box" id="nameBox">
             <input id="username" placeholder="输入名字（永久不可改）">
@@ -137,329 +108,355 @@
             <div class="info" id="age"></div>
             <div class="info" id="love"></div>
             <div class="info" id="hunger"></div>
+            <div class="info" id="thirst"></div>
             <div class="info" id="mood"></div>
             <div class="desc" id="desc"></div>
             <button onclick="doAct(1)">🍼喂养</button>
             <button onclick="doAct(2)">🧸玩耍</button>
             <button onclick="doAct(3)">🛁洗澡</button>
             <button onclick="doAct(4)">💤睡觉</button>
+            <button onclick="doAct(5)">💧喝水</button>
             <div class="tip" id="tip"></div>
         </div>
     </div>
-    <!-- 领养页 -->
     <div class="page" id="page2">
         <div class="box">
             <div class="tip" id="adoptTip"></div>
             <div class="pet-grid" id="adoptList"></div>
         </div>
     </div>
-    <!-- 大家的宠物页 -->
-    <div class="page" id="page4">
+    <div class="page" id="page3">
         <div class="box">
-            <div id="publicList"></div>
+            <h3 style="margin-bottom:20px;color:var(--text-main)">我的宠物栏</h3>
+            <div class="pet-list" id="petList"></div>
         </div>
     </div>
+</div>
 
-    <!-- 底部标签栏 -->
-    <div class="tabbar">
-        <div class="tab" onclick="tab(1)">我的</div>
-        <div class="tab" onclick="tab(2)">领养</div>
-        <div class="tab" onclick="tab(4)">大家</div>
-    </div>
+<!-- 底部标签栏 -->
+<div class="tabbar">
+    <div class="tab" onclick="tab(1)">我的</div>
+    <div class="tab" onclick="tab(2)">领养</div>
+    <div class="tab" onclick="tab(3)">宠物</div>
+</div>
 
-    <script>
-        // 时间常量定义 ✅核心修改：30分钟=1800000毫秒
-        const DAY = 86400000;
-        const MINUTE30 = 1800000; // 30分钟毫秒数
-        const MONTH = 30 * DAY;
-        // ✅ 免费云存储地址（jsonstore.io，直接可用）
-        const SERVER_API = "https://www.jsonstore.io/9f7e6d5c4b3a2b1c0d9e8f7a6b5c4d3e";
-        // 宠物最高年龄配置 - 乌龟(pid=10)专属150岁，其他宠物无上限
-        const PET_MAX_AGE = {
-            10: 150
-        };
+<script>
+const DAY = 86400000;
+const HOUR = 3600000;
+const THIRTY_MINUTES = 1800000; // 操作冷却30分钟
+const MONTH = 30*DAY; // 领养间隔30天（第3只开始）
+const TEN_MINUTES = 600000;
+const REDUCE_NUM = 3;
+const MAX_FREE_ADOPT = 2; // 核心：免费直接领养最大数量2只
+const pets = [
+    {icon:"🐣",stage:["🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
+    {icon:"🐱",stage:["🐱","🐈"],name:"小猫",desc:"温柔粘人"},
+    {icon:"🐍",stage:["🐍"],name:"小蛇",desc:"优雅安静"},
+    {icon:"🐶",stage:["🐶","🐕","🦮"],name:"小狗",desc:"忠诚活泼"},
+    {icon:"🐿️",stage:["🐿️"],name:"松鼠",desc:"元气满满"},
+    {icon:"🐰",stage:["🐰","🐇"],name:"兔子",desc:"软萌乖巧"},
+    {icon:"🐦",stage:["🐦"],name:"小鸟",desc:"轻盈可爱"},
+    {icon:"🦜",stage:["🦜"],name:"鹦鹉",desc:"聪明鲜艳"},
+    {icon:"🦚",stage:["🦚"],name:"孔雀",desc:"美丽优雅"},
+    {icon:"🐭",stage:["🐭","🐀"],name:"小鼠",desc:"机灵小巧"},
+];
 
-        // 宠物配置列表 - 新增乌龟🐢，猫咪无stage（心情映射）
-        const pets = [
-            {icon:"🐣",stage:["🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
-            {icon:"🐱",name:"小猫",desc:"温柔粘人"},
-            {icon:"🐍",stage:["🐍"],name:"小蛇",desc:"优雅安静"},
-            {icon:"🐶",stage:["🐶","🐕","🦮"],name:"小狗",desc:"忠诚活泼"},
-            {icon:"🐿️",stage:["🐿️"],name:"松鼠",desc:"元气满满"},
-            {icon:"🐰",stage:["🐰","🐇"],name:"兔子",desc:"软萌乖巧"},
-            {icon:"🐦",stage:["🐦"],name:"小鸟",desc:"轻盈可爱"},
-            {icon:"🦜",stage:["🦜"],name:"鹦鹉",desc:"聪明鲜艳"},
-            {icon:"🦚",stage:["🦚"],name:"孔雀",desc:"美丽优雅"},
-            {icon:"🐭",stage:["🐭","🐀"],name:"小鼠",desc:"机灵小巧"},
-            {icon:"🐢",stage:["🐢"],name:"乌龟",desc:"长寿慢悠"}
-        ];
+// 本地存储操作
+function getData(){
+    let d=localStorage.getItem("pet_data");
+    return d?JSON.parse(d):{theme: 'c2'};
+}
+function saveData(d){
+    localStorage.setItem("pet_data",JSON.stringify(d));
+}
 
-        // 小猫心情-形态映射：😿(<60)、🙀(60-69)、🐱(70-89)、😸(≥90)
-        function getCatIconByMood(mood) {
-            if (mood < 60) {
-                return "😿";
-            } else if (mood < 70) {
-                return "🙀";
-            } else if (mood < 90) {
-                return "🐱";
-            } else {
-                return "😸";
+// 标签页切换
+let currentPage = 1;
+function tab(n){
+    currentPage = n;
+    document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+    document.getElementById("page"+n).style.display="block";
+    // 切换到宠物栏时重新渲染
+    if(n===3) renderPetList();
+}
+
+// 左右滑动切换页面核心逻辑
+let startX = 0;
+const container = document.getElementById("pageContainer");
+container.addEventListener('touchstart', (e)=>{
+    startX = e.touches[0].clientX;
+});
+container.addEventListener('touchend', (e)=>{
+    const endX = e.changedTouches[0].clientX;
+    const diffX = startX - endX;
+    // 滑动阈值：大于50px才触发切页
+    if(Math.abs(diffX) > 50){
+        if(diffX > 0 && currentPage < 3){
+            // 左滑：下一页
+            tab(currentPage + 1);
+        }else if(diffX < 0 && currentPage > 1){
+            // 右滑：上一页
+            tab(currentPage - 1);
+        }
+    }
+});
+
+let currentPet = 0;
+// 设置用户名
+function setName(){
+    let user=document.getElementById("username").value.trim();
+    if(!user)return;
+    let d={
+        user:user,
+        pets:[],
+        cd:0,
+        lastReduce: Date.now(),
+        theme: 'c2'
+    };
+    saveData(d);
+    show();
+}
+
+// 检查宠物死亡
+function checkAllDie(){
+    let d=getData();
+    if(!d)return;
+    d.pets.forEach((pet,i)=>{
+        if(pet.dead)return;
+        let now=Date.now();
+        if(now-pet.lastFeed >= 3*DAY && pet.mood<40){
+            if(Math.random()<0.3){
+                d.pets[i].dead=true;
             }
         }
+    });
+    saveData(d);
+}
 
-        // 从云服务器获取数据，失败兜底本地存储
-        async function getFromServer() {
-            try {
-                const res = await fetch(`${SERVER_API}/pet`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.result ? data.result : null;
-                }
-            } catch (e) {
-                console.log('【云存储】获取失败，使用本地存储', e);
+// 10分钟属性减少（饥饿、心情、口渴）- 修复口渴值null
+function reduceAttr(){
+    let d=getData();
+    if(!d || !d.pets.length)return;
+    const now = Date.now();
+    if(now - d.lastReduce >= TEN_MINUTES){
+        d.pets.forEach(pet=>{
+            if(!pet.dead){
+                if(pet.thirst == null || pet.thirst === undefined) pet.thirst = 80;
+                pet.hunger = Math.max(0, pet.hunger - REDUCE_NUM);
+                pet.mood = Math.max(0, pet.mood - REDUCE_NUM);
+                pet.thirst = Math.max(0, pet.thirst - REDUCE_NUM);
             }
-            return getData();
+        });
+        d.lastReduce = now;
+        saveData(d);
+    }
+}
+
+// 展示宠物信息
+function show(){
+    let d=getData();
+    if(!d){
+        document.getElementById("nameBox").style.display="block";
+        document.getElementById("petMain").style.display="none";
+        return;
+    }
+    if(d.theme) changeTheme(d.theme, false);
+    reduceAttr();
+    checkAllDie();
+    document.getElementById("nameBox").style.display="none";
+    document.getElementById("petMain").style.display="block";
+    renderSwitch();
+    showPet();
+}
+
+// 渲染宠物小切换栏
+function renderSwitch(){
+    let d=getData();
+    let box=document.getElementById("petSwitch");
+    box.innerHTML="";
+    d.pets.forEach((pet,i)=>{
+        if(!pet.dead){
+            let p=pets[pet.pid];
+            let div=document.createElement("div");
+            div.className="pet-small";
+            div.innerText=p.stage[pet.stage];
+            div.onclick=()=>{currentPet=i;showPet()};
+            box.appendChild(div);
         }
+    });
+}
 
-        // 向云服务器保存数据，失败仅提示不影响使用
-        async function saveToServer(data) {
-            try {
-                await fetch(`${SERVER_API}/pet`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                console.log('【云存储】数据保存成功');
-            } catch (e) {
-                console.log('【云存储】保存失败，仅本地存储', e);
-            }
+// 展示当前宠物详情
+function showPet(){
+    let d=getData();
+    if(!d.pets.length){
+        tab(2);
+        return;
+    }
+    let pet=d.pets[currentPet];
+    let p=pets[pet.pid];
+    // 所有属性兜底，避免null
+    pet.thirst = pet.thirst ?? 80;
+    pet.hunger = pet.hunger ?? 50;
+    pet.mood = pet.mood ?? 50;
+    pet.love = pet.love ?? 0;
+    pet.age = pet.age ?? 0;
+
+    document.getElementById("icon").innerText=p.stage[pet.stage];
+    document.getElementById("name").innerText=d.user+"的"+p.name;
+    document.getElementById("age").innerText="年龄："+pet.age;
+    document.getElementById("love").innerText="爱心："+pet.love;
+    document.getElementById("hunger").innerText="饥饿："+pet.hunger;
+    document.getElementById("thirst").innerText="口渴："+pet.thirst;
+    document.getElementById("mood").innerText="心情："+pet.mood;
+    document.getElementById("desc").innerText=p.desc;
+    let now=Date.now();
+    let cd=now<d.cd;
+    document.querySelectorAll("button").forEach(b=>{
+        b.disabled=pet.dead||cd;
+    });
+    document.getElementById("tip").innerText=pet.dead?"⚠️已死亡":cd?"冷却30分钟中":"";
+}
+
+// 领养宠物 - 核心修改：支持直接领养2只，第3只开始需30天间隔
+function adopt(pid){
+    let d=getData();
+    let now=Date.now();
+    // 判断当前宠物数量：小于2只直接领养，大于等于2只需检查30天间隔
+    if(d.pets.length >= MAX_FREE_ADOPT){
+        let last=d.pets[d.pets.length-1];
+        if(now-last.adoptTime < MONTH){
+            alert(`已领养${MAX_FREE_ADOPT}只，需30天后才能领养下一只`);
+            return;
         }
+    }
+    // 初始化宠物属性，口渴默认80
+    d.pets.push({
+        pid:pid,
+        age:0,stage:0,love:0,hunger:50,mood:50,thirst:80,
+        adoptTime:now,
+        lastFeed:now,
+        dead:false
+    });
+    saveData(d);
+    currentPet=d.pets.length-1;
+    tab(1);
+    show();
+    // 领养后更新宠物栏
+    if(currentPage===3) renderPetList();
+}
 
-        // 本地存储：获取数据
-        function getData() {
-            let d = localStorage.getItem("pet_data");
-            return d ? JSON.parse(d) : null;
+// 宠物操作（喂养/玩耍/洗澡/睡觉/喝水）
+function doAct(t){
+    let d=getData();
+    if(!d.pets.length)return;
+    let pet=d.pets[currentPet];
+    if(pet.dead)return;
+    if(Date.now()<d.cd)return;
+    d.cd=Date.now()+THIRTY_MINUTES;
+    if(pet.thirst == null) pet.thirst = 80;
+    if(t==1){//喂养
+        pet.hunger=Math.min(100,pet.hunger+20);
+        pet.love++;
+        pet.lastFeed=Date.now();
+        if(pet.love%4==0 && pet.stage<pets[pet.pid].stage.length-1){
+            pet.stage++;pet.age++;
         }
+    }
+    if(t==2){//玩耍
+        pet.mood=Math.min(100,pet.mood+10);pet.love++
+    }
+    if(t==3){//洗澡
+        pet.mood=Math.min(100,pet.mood+8)
+    }
+    if(t==4){//睡觉
+        pet.mood=Math.min(100,pet.mood+12);pet.hunger=Math.max(0,pet.hunger-5)
+    }
+    if(t==5){//喝水
+        pet.thirst=Math.min(100,pet.thirst+25);pet.love++
+    }
+    saveData(d);
+    showPet();
+    // 操作后更新宠物栏
+    if(currentPage===3) renderPetList();
+}
 
-        // 本地+云双存储：保存数据
-        function saveData(d) {
-            localStorage.setItem("pet_data", JSON.stringify(d));
-            saveToServer(d);
+// 渲染宠物栏（分页3）
+function renderPetList(){
+    let d=getData();
+    let box=document.getElementById("petList");
+    box.innerHTML="";
+    if(!d || !d.pets.length){
+        box.innerHTML='<div style="color:var(--text-desc)">暂无领养的宠物，快去领养吧～</div>';
+        return;
+    }
+    d.pets.forEach((pet,i)=>{
+        let p=pets[pet.pid];
+        // 属性兜底
+        pet.thirst = pet.thirst ?? 80;
+        pet.hunger = pet.hunger ?? 50;
+        pet.mood = pet.mood ?? 50;
+        pet.age = pet.age ?? 0;
+        pet.love = pet.love ?? 0;
+
+        let card=document.createElement("div");
+        card.className="pet-card";
+        card.onclick=()=>{currentPet=i;tab(1);showPet()};
+        card.innerHTML=`
+            <div class="pet-card-icon">${pet.dead?'⚰️':p.stage[pet.stage]}</div>
+            <div>${d.user}的${p.name}</div>
+            <div style="font-size:14px;color:var(--text-desc)">年龄：${pet.age}</div>
+            <div style="font-size:14px;color:var(--text-desc)">${pet.dead?'已死亡':'爱心：'+pet.love}</div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+// 渲染领养列表
+pets.forEach((p,i)=>{
+    let div=document.createElement("div");
+    div.className="pet-item";
+    div.innerText=p.icon;
+    div.onclick=()=>adopt(i);
+    document.getElementById("adoptList").appendChild(div);
+});
+
+// 右上角设置面板切换
+function toggleSetting(){
+    const panel = document.getElementById("settingPanel");
+    panel.classList.toggle("show");
+    document.addEventListener('click', function closePanel(e){
+        const wrap = document.querySelector('.setting-wrap');
+        if(!wrap.contains(e.target)){
+            panel.classList.remove("show");
+            document.removeEventListener('click', closePanel);
         }
+    });
+}
 
-        // 标签页切换
-        function tab(n) {
-            document.querySelectorAll(".page").forEach(p => {
-                p.style.display = "none";
-            });
-            document.getElementById("page" + n).style.display = "block";
-        }
+// 切换主题
+function changeTheme(theme, isSave = true){
+    const body = document.body;
+    body.classList.remove('theme-c1', 'theme-c2', 'theme-c3');
+    body.classList.add(`theme-${theme}`);
+    if(isSave){
+        let d=getData();
+        d.theme = theme;
+        saveData(d);
+    }
+}
 
-        // 当前选中宠物索引
-        let current = 0;
-
-        // 设置用户名初始化
-        function setName() {
-            let user = document.getElementById("username").value.trim();
-            if (!user) {
-                return alert("请输入名字！");
-            }
-            let d = {
-                user: user,
-                pets: [],
-                cd: 0
-            };
-            saveData(d);
-            show();
-        }
-
-        // 检查宠物是否死亡（3天未喂+心情<40，30%概率）
-        function checkAllDie() {
-            let d = getData();
-            if (!d) return;
-            d.pets.forEach((pet, i) => {
-                if (pet.dead) return;
-                let now = Date.now();
-                if (now - pet.lastFeed >= 3 * DAY && pet.mood < 40) {
-                    if (Math.random() < 0.3) {
-                        d.pets[i].dead = true;
-                    }
-                }
-            });
-            saveData(d);
-        }
-
-        // 核心展示方法
-        async function show() {
-            let d = await getFromServer();
-            if (!d) {
-                document.getElementById("nameBox").style.display = "block";
-                document.getElementById("petMain").style.display = "none";
-                return;
-            }
-            checkAllDie();
-            document.getElementById("nameBox").style.display = "none";
-            document.getElementById("petMain").style.display = "block";
-            renderSwitch();
-            showPet();
-            showPublic();
-        }
-
-        // 渲染宠物切换小图标
-        function renderSwitch() {
-            let d = getData();
-            let box = document.getElementById("petSwitch");
-            box.innerHTML = "";
-            d.pets.forEach((pet, i) => {
-                let p = pets[pet.pid];
-                let div = document.createElement("div");
-                div.className = "pet-small";
-                div.innerText = p.name === "小猫" ? getCatIconByMood(pet.mood) : p.stage[pet.stage];
-                div.onclick = () => {
-                    current = i;
-                    showPet();
-                };
-                box.appendChild(div);
-            });
-        }
-
-        // 展示当前宠物详情 ✅修改提示文字：冷却30分钟中
-        function showPet() {
-            let d = getData();
-            if (!d.pets.length) {
-                tab(2);
-                return;
-            }
-            let pet = d.pets[current];
-            let p = pets[pet.pid];
-            // 渲染宠物图标
-            document.getElementById("icon").innerText = p.name === "小猫" ? getCatIconByMood(pet.mood) : p.stage[pet.stage];
-            // 渲染基础信息
-            document.getElementById("name").innerText = d.user + "的" + p.name;
-            document.getElementById("age").innerText = "年龄：" + pet.age;
-            document.getElementById("love").innerText = "爱心：" + pet.love;
-            document.getElementById("hunger").innerText = "饥饿：" + pet.hunger;
-            document.getElementById("mood").innerText = "心情：" + pet.mood;
-            document.getElementById("desc").innerText = p.desc;
-            // 按钮禁用逻辑
-            let now = Date.now();
-            let cd = now < d.cd;
-            document.querySelectorAll("button").forEach(b => {
-                b.disabled = pet.dead || cd;
-            });
-            // 底部提示文字
-            document.getElementById("tip").innerText = pet.dead ? "⚠️已死亡" : cd ? "冷却30分钟中" : "";
-        }
-
-        // 领养宠物（所有宠物默认：年龄1、心情80、饥饿50）
-        function adopt(pid) {
-            let d = getData();
-            let now = Date.now();
-            // 间隔30天才能领养下一只
-            if (d.pets.length > 0) {
-                let last = d.pets[d.pets.length - 1];
-                if (now - last.adoptTime < MONTH) {
-                    alert("需30天后才能领养下一只宠物哦！");
-                    return;
-                }
-            }
-            // 新增宠物初始数据（最低年龄1、默认心情80）
-            d.pets.push({
-                pid: pid,
-                age: 1,
-                stage: 0,
-                love: 0,
-                hunger: 50,
-                mood: 80,
-                adoptTime: now,
-                lastFeed: now,
-                dead: false
-            });
-            saveData(d);
-            current = d.pets.length - 1;
-            tab(1);
-            show();
-        }
-
-        // 宠物操作方法 ✅核心修改：冷却时间设为30分钟
-        function doAct(t) {
-            let d = getData();
-            if (!d.pets.length) return;
-            let pet = d.pets[current];
-            // 先判断宠物状态，再执行操作
-            if (pet.dead || Date.now() < d.cd) return;
-            
-            d.cd = Date.now() + MINUTE30; // 操作后冷却30分钟
-
-            // 1-喂养：加饥饿+爱心，非乌龟满4爱心升级（不超最高年龄）
-            if (t === 1) {
-                pet.hunger = Math.min(100, pet.hunger + 20);
-                pet.love++;
-                pet.lastFeed = Date.now();
-                let p = pets[pet.pid];
-                // 非猫咪+有stage+未到最高年龄，才升级
-                if (p.stage && pet.love % 4 === 0 && pet.stage < p.stage.length - 1) {
-                    // 乌龟判断是否超150岁，其他宠物直接升级
-                    if (!PET_MAX_AGE[pet.pid] || pet.age < PET_MAX_AGE[pet.pid]) {
-                        pet.stage++;
-                        pet.age++;
-                    }
-                }
-            }
-            // 2-玩耍：加心情+爱心（不超100）
-            if (t === 2) {
-                pet.mood = Math.min(100, pet.mood + 10);
-                pet.love++;
-            }
-            // 3-洗澡：加心情（不超100）
-            if (t === 3) {
-                pet.mood = Math.min(100, pet.mood + 8);
-            }
-            // 4-睡觉：加心情、减饥饿（心情不超100，饥饿不低于0）
-            if (t === 4) {
-                pet.mood = Math.min(100, pet.mood + 12);
-                pet.hunger = Math.max(0, pet.hunger - 5);
-            }
-
-            saveData(d);
-            showPet();
-        }
-
-        // 渲染大家的宠物列表
-        function showPublic() {
-            let box = document.getElementById("publicList");
-            box.innerHTML = "";
-            let d = getData();
-            if (!d) return;
-            d.pets.forEach(pet => {
-                if (!pet.dead) {
-                    let p = pets[pet.pid];
-                    let petIcon = p.name === "小猫" ? getCatIconByMood(pet.mood) : p.stage[pet.stage];
-                    let div = document.createElement("div");
-                    div.className = "public";
-                    div.innerText = petIcon + " " + d.user + "的" + p.name + " 年龄:" + pet.age;
-                    box.appendChild(div);
-                }
-            });
-        }
-
-        // 页面初始化
-        (async () => {
-            await show();
-            // 渲染领养列表
-            pets.forEach((p, i) => {
-                let div = document.createElement("div");
-                div.className = "pet-item";
-                div.innerText = p.icon;
-                div.onclick = () => {
-                    adopt(i);
-                };
-                document.getElementById("adoptList").appendChild(div);
-            });
-        })();
-    </script>
+// 初始化展示
+show();
+// 定时检查属性，更新宠物状态
+setInterval(()=>{
+    let d=getData();
+    if(d && d.pets.length){
+        reduceAttr();
+        showPet();
+        if(currentPage===3) renderPetList();
+    }
+}, TEN_MINUTES);
+</script>
 </body>
 </html>
