@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <title>云宠物</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
-        /* 主题变量定义 - 梦幻粉默认 */
         :root {
             --bg-main: #f9f5ff;
             --bg-box: #fff;
@@ -20,7 +20,6 @@
             --text-tip: red;
             --border-input: #ddd;
         }
-        /* 春天绿(c1) - 浅绿按钮 */
         .theme-c1 {
             --bg-main: #f0fdf4;
             --bg-box: #fff;
@@ -35,7 +34,6 @@
             --text-tip: #ef4444;
             --border-input: #a7f3d0;
         }
-        /* 幽暗黑(c3) - 深色模式 */
         .theme-c3 {
             --bg-main: #121212;
             --bg-box: #1e1e1e;
@@ -69,14 +67,13 @@
         .public{background:var(--bg-public);padding:10px;border-radius:12px;margin:8px auto;max-width:350px;color:var(--text-main)}
         .pet-switch{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
         .pet-small{font-size:36px;padding:6px;background:var(--bg-pet-small);border-radius:10px;cursor:pointer;color:var(--text-main)}
-        /* 右上角设置样式 - 纯黑色齿轮 */
         .setting-wrap{position:fixed;top:15px;right:15px;z-index:999}
-        .setting-btn{font-size:24px;cursor:pointer;padding:8px 12px;border-radius:8px;background:var(--bg-box);border:1px solid var(--border-input);color:#000 !important;}
+        .setting-btn{cursor:pointer;padding:4px;border-radius:8px;background:var(--bg-box);border:1px solid var(--border-input);display:flex;align-items:center;justify-content:center;width:36px;height:36px;}
+        .setting-img{width:100%;height:100%;object-fit:contain;display:block;}
         .setting-panel{position:absolute;top:50px;right:0;background:var(--bg-box);border-radius:12px;padding:10px;border:1px solid var(--border-input);display:none;flex-direction:column;gap:8px;min-width:120px}
         .theme-item{padding:8px;text-align:center;border-radius:8px;cursor:pointer;border:1px solid var(--border-input)}
         .theme-item:hover{opacity:0.8}
         .setting-panel.show{display:flex}
-        /* 宠物栏样式优化 */
         .pet-list{display:flex;flex-direction:column;gap:15px;margin-top:20px}
         .pet-card{background:var(--bg-pet-small);padding:15px;border-radius:16px;cursor:pointer;transition:opacity 0.3s}
         .pet-card:hover{opacity:0.8}
@@ -84,16 +81,16 @@
     </style>
 </head>
 <body class="theme-c2">
-<!-- 右上角设置模块 -->
 <div class="setting-wrap">
-    <div class="setting-btn" onclick="toggleSetting()">⚙️</div>
+    <div class="setting-btn" onclick="toggleSetting()">
+        <img src="st.png" class="setting-img" alt="设置">
+    </div>
     <div class="setting-panel" id="settingPanel">
         <div class="theme-item" onclick="changeTheme('c1')">春天绿</div>
         <div class="theme-item" onclick="changeTheme('c2')">梦幻粉(默认)</div>
         <div class="theme-item" onclick="changeTheme('c3')">幽暗黑(深色)</div>
     </div>
 </div>
-<!-- 页面容器（用于滑动） -->
 <div class="page-container" id="pageContainer">
     <div class="page" id="page1" style="display:block">
         <div class="box" id="nameBox">
@@ -126,12 +123,11 @@
     </div>
     <div class="page" id="page3">
         <div class="box">
-            <h3 style="margin-bottom:20px;color:var(--text-main)">我的宠物栏</h3>
+            <h3 style="margin-bottom:20px;color:var(--text-main)">我的宠物</h3>
             <div class="pet-list" id="petList"></div>
         </div>
     </div>
 </div>
-<!-- 底部标签栏 -->
 <div class="tabbar">
     <div class="tab" onclick="tab(1)">我的</div>
     <div class="tab" onclick="tab(2)">领养</div>
@@ -140,24 +136,24 @@
 <script>
 const DAY = 86400000;
 const HOUR = 3600000;
-const THIRTY_MINUTES = 1800000; // 单宠物操作冷却30分钟
-const MONTH = 30*DAY; // 领养间隔30天（第3只开始）
+const THIRTY_MINUTES = 1800000;
+const MONTH = 30*DAY;
 const TEN_MINUTES = 600000;
 const REDUCE_NUM = 3;
-const MAX_FREE_ADOPT = 2; // 免费直接领养最大数量2只
+const MAX_FREE_ADOPT = 2;
+// 仅小鸡保留多阶段，其他动物删除所有进阶形态
 const pets = [
-    {icon:"🐣",stage:["🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
-    {icon:"🐱",stage:["🐱","🐈"],name:"小猫",desc:"温柔粘人"},
+    {icon:"🥚",stage:["🥚","🐣","🐥","🐤","🐓"],name:"小鸡",desc:"毛茸茸小鸡"},
+    {icon:"🐱",stage:["🐱"],name:"小猫",desc:"温柔粘人"},
     {icon:"🐍",stage:["🐍"],name:"小蛇",desc:"优雅安静"},
-    {icon:"🐶",stage:["🐶","🐕","🦮"],name:"小狗",desc:"忠诚活泼"},
+    {icon:"🐶",stage:["🐶"],name:"小狗",desc:"忠诚活泼"},
     {icon:"🐿️",stage:["🐿️"],name:"松鼠",desc:"元气满满"},
-    {icon:"🐰",stage:["🐰","🐇"],name:"兔子",desc:"软萌乖巧"},
+    {icon:"🐰",stage:["🐰"],name:"兔子",desc:"软萌乖巧"},
     {icon:"🐦",stage:["🐦"],name:"小鸟",desc:"轻盈可爱"},
     {icon:"🦜",stage:["🦜"],name:"鹦鹉",desc:"聪明鲜艳"},
     {icon:"🦚",stage:["🦚"],name:"孔雀",desc:"美丽优雅"},
-    {icon:"🐭",stage:["🐭","🐀"],name:"小鼠",desc:"机灵小巧"},
+    {icon:"🐭",stage:["🐭"],name:"小鼠",desc:"机灵小巧"},
 ];
-// 本地存储操作
 function getData(){
     let d=localStorage.getItem("pet_data");
     return d?JSON.parse(d):{theme: 'c2'};
@@ -165,16 +161,13 @@ function getData(){
 function saveData(d){
     localStorage.setItem("pet_data",JSON.stringify(d));
 }
-// 标签页切换
 let currentPage = 1;
 function tab(n){
     currentPage = n;
     document.querySelectorAll(".page").forEach(p=>p.style.display="none");
     document.getElementById("page"+n).style.display="block";
-    // 切换到宠物栏时重新渲染
     if(n===3) renderPetList();
 }
-// 左右滑动切换页面核心逻辑
 let startX = 0;
 const container = document.getElementById("pageContainer");
 container.addEventListener('touchstart', (e)=>{
@@ -183,19 +176,15 @@ container.addEventListener('touchstart', (e)=>{
 container.addEventListener('touchend', (e)=>{
     const endX = e.changedTouches[0].clientX;
     const diffX = startX - endX;
-    // 滑动阈值：大于50px才触发切页
     if(Math.abs(diffX) > 50){
         if(diffX > 0 && currentPage < 3){
-            // 左滑：下一页
             tab(currentPage + 1);
         }else if(diffX < 0 && currentPage > 1){
-            // 右滑：上一页
             tab(currentPage - 1);
         }
     }
 });
 let currentPet = 0;
-// 设置用户名
 function setName(){
     let user=document.getElementById("username").value.trim();
     if(!user)return;
@@ -208,7 +197,6 @@ function setName(){
     saveData(d);
     show();
 }
-// 检查宠物死亡
 function checkAllDie(){
     let d=getData();
     if(!d)return;
@@ -223,7 +211,6 @@ function checkAllDie(){
     });
     saveData(d);
 }
-// 10分钟属性减少（饥饿、心情、口渴）- 修复口渴值null
 function reduceAttr(){
     let d=getData();
     if(!d || !d.pets.length)return;
@@ -232,7 +219,7 @@ function reduceAttr(){
         d.pets.forEach(pet=>{
             if(!pet.dead){
                 if(pet.thirst == null || pet.thirst === undefined) pet.thirst = 80;
-                if(pet.petCd == null) pet.petCd = 0; // 老宠物补全petCd属性
+                if(pet.petCd == null) pet.petCd = 0;
                 pet.hunger = Math.max(0, pet.hunger - REDUCE_NUM);
                 pet.mood = Math.max(0, pet.mood - REDUCE_NUM);
                 pet.thirst = Math.max(0, pet.thirst - REDUCE_NUM);
@@ -242,7 +229,16 @@ function reduceAttr(){
         saveData(d);
     }
 }
-// 展示宠物信息
+// 小鸡按年龄进化：2岁🐣、10岁🐥、12岁🐤、15岁🐓
+function updatePetStage(pet){
+    if(pet.pid === 0){
+        if(pet.age >= 15) pet.stage = 4;
+        else if(pet.age >= 12) pet.stage = 3;
+        else if(pet.age >= 10) pet.stage = 2;
+        else if(pet.age >= 2) pet.stage = 1;
+        else pet.stage = 0;
+    }
+}
 function show(){
     let d=getData();
     if(!d){
@@ -253,12 +249,14 @@ function show(){
     if(d.theme) changeTheme(d.theme, false);
     reduceAttr();
     checkAllDie();
+    // 刷新所有宠物阶段
+    d.pets.forEach(pet=>updatePetStage(pet));
+    saveData(d);
     document.getElementById("nameBox").style.display="none";
     document.getElementById("petMain").style.display="block";
     renderSwitch();
     showPet();
 }
-// 渲染宠物小切换栏
 function renderSwitch(){
     let d=getData();
     let box=document.getElementById("petSwitch");
@@ -274,7 +272,6 @@ function renderSwitch(){
         }
     });
 }
-// 展示当前宠物详情 - 核心修改：判断单宠物petCd
 function showPet(){
     let d=getData();
     if(!d.pets.length){
@@ -283,14 +280,13 @@ function showPet(){
     }
     let pet=d.pets[currentPet];
     let p=pets[pet.pid];
-    // 所有属性兜底，老宠物补全petCd
     pet.thirst = pet.thirst ?? 80;
     pet.hunger = pet.hunger ?? 50;
     pet.mood = pet.mood ?? 50;
     pet.love = pet.love ?? 0;
     pet.age = pet.age ?? 0;
-    pet.petCd = pet.petCd ?? 0; // 单宠物冷却时间，默认0
-
+    pet.petCd = pet.petCd ?? 0;
+    pet.stage = pet.stage ?? 0;
     document.getElementById("icon").innerText=p.stage[pet.stage];
     document.getElementById("name").innerText=d.user+"的"+p.name;
     document.getElementById("age").innerText="年龄："+pet.age;
@@ -299,19 +295,16 @@ function showPet(){
     document.getElementById("thirst").innerText="口渴："+pet.thirst;
     document.getElementById("mood").innerText="心情："+pet.mood;
     document.getElementById("desc").innerText=p.desc;
-    
     let now=Date.now();
-    let cd=now < pet.petCd; // 仅判断当前宠物的冷却
+    let cd=now < pet.petCd;
     document.querySelectorAll("button").forEach(b=>{
         b.disabled=pet.dead||cd;
     });
     document.getElementById("tip").innerText=pet.dead?"⚠️已死亡":cd?"冷却30分钟中":"";
 }
-// 领养宠物 - 核心修改：初始化单宠物petCd
 function adopt(pid){
     let d=getData();
     let now=Date.now();
-    // 判断当前宠物数量：小于2只直接领养，大于等于2只需检查30天间隔
     if(d.pets.length >= MAX_FREE_ADOPT){
         let last=d.pets[d.pets.length-1];
         if(now-last.adoptTime < MONTH){
@@ -319,60 +312,55 @@ function adopt(pid){
             return;
         }
     }
-    // 初始化宠物属性，添加petCd（单宠物冷却），口渴默认80
     d.pets.push({
         pid:pid,
         age:0,stage:0,love:0,hunger:50,mood:50,thirst:80,
         adoptTime:now,
         lastFeed:now,
         dead:false,
-        petCd:0 // 单宠物冷却时间，初始0
+        petCd:0
     });
     saveData(d);
     currentPet=d.pets.length-1;
     tab(1);
     show();
-    // 领养后更新宠物栏
     if(currentPage===3) renderPetList();
 }
-// 宠物操作（喂养/玩耍/洗澡/睡觉/喝水）- 核心修改：设置单宠物petCd
 function doAct(t){
     let d=getData();
     if(!d.pets.length)return;
     let pet=d.pets[currentPet];
     if(pet.dead)return;
-    
     let now=Date.now();
-    if(now < pet.petCd)return; // 仅判断当前宠物的冷却
-    pet.petCd = now + THIRTY_MINUTES; // 给当前宠物设置30分钟冷却
-
+    if(now < pet.petCd)return;
+    pet.petCd = now + THIRTY_MINUTES;
     if(pet.thirst == null) pet.thirst = 80;
-    if(t==1){//喂养
+    if(t==1){
         pet.hunger=Math.min(100,pet.hunger+20);
         pet.love++;
         pet.lastFeed=Date.now();
-        if(pet.love%4==0 && pet.stage<pets[pet.pid].stage.length-1){
-            pet.stage++;pet.age++;
+        // 爱心每4个涨1岁，仅小鸡生效年龄进化
+        if(pet.love%4==0){
+            pet.age++;
+            updatePetStage(pet);
         }
     }
-    if(t==2){//玩耍
+    if(t==2){
         pet.mood=Math.min(100,pet.mood+10);pet.love++
     }
-    if(t==3){//洗澡
+    if(t==3){
         pet.mood=Math.min(100,pet.mood+8)
     }
-    if(t==4){//睡觉
+    if(t==4){
         pet.mood=Math.min(100,pet.mood+12);pet.hunger=Math.max(0,pet.hunger-5)
     }
-    if(t==5){//喝水
+    if(t==5){
         pet.thirst=Math.min(100,pet.thirst+25);pet.love++
     }
     saveData(d);
     showPet();
-    // 操作后更新宠物栏
     if(currentPage===3) renderPetList();
 }
-// 渲染宠物栏（分页3）
 function renderPetList(){
     let d=getData();
     let box=document.getElementById("petList");
@@ -383,14 +371,13 @@ function renderPetList(){
     }
     d.pets.forEach((pet,i)=>{
         let p=pets[pet.pid];
-        // 属性兜底
         pet.thirst = pet.thirst ?? 80;
         pet.hunger = pet.hunger ?? 50;
         pet.mood = pet.mood ?? 50;
         pet.age = pet.age ?? 0;
         pet.love = pet.love ?? 0;
         pet.petCd = pet.petCd ?? 0;
-
+        pet.stage = pet.stage ?? 0;
         let card=document.createElement("div");
         card.className="pet-card";
         card.onclick=()=>{currentPet=i;tab(1);showPet()};
@@ -403,7 +390,6 @@ function renderPetList(){
         box.appendChild(card);
     });
 }
-// 渲染领养列表
 pets.forEach((p,i)=>{
     let div=document.createElement("div");
     div.className="pet-item";
@@ -411,7 +397,6 @@ pets.forEach((p,i)=>{
     div.onclick=()=>adopt(i);
     document.getElementById("adoptList").appendChild(div);
 });
-// 右上角设置面板切换
 function toggleSetting(){
     const panel = document.getElementById("settingPanel");
     panel.classList.toggle("show");
@@ -423,7 +408,6 @@ function toggleSetting(){
         }
     });
 }
-// 切换主题
 function changeTheme(theme, isSave = true){
     const body = document.body;
     body.classList.remove('theme-c1', 'theme-c2', 'theme-c3');
@@ -434,9 +418,7 @@ function changeTheme(theme, isSave = true){
         saveData(d);
     }
 }
-// 初始化展示
 show();
-// 定时检查属性，更新宠物状态
 setInterval(()=>{
     let d=getData();
     if(d && d.pets.length){
